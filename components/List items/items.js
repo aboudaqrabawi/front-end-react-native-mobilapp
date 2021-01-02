@@ -8,7 +8,7 @@ const Items = (props) => {
 // const {name,tagline,image} = props;
 const [items, setItems] = useState('');
 localStorage.setItem('userid',11)
-localStorage.setItem('location','amman')
+// localStorage.setItem('location','amman')
 
 const Delete = (ID) => {
   
@@ -22,9 +22,9 @@ const Delete = (ID) => {
 }
 
 
-useEffect( () => {
+useEffect( async () => {
     
-    axios.get('http://192.168.1.13:5000/ItemsList')   
+    await axios.get('http://192.168.1.13:5000/ItemsList')   
     .then( res => {
         // console.log (res.data)
         setItems(res.data)
@@ -36,18 +36,7 @@ useEffect( () => {
   }, []);
 
 
-//getting all the items 
-useEffect(  () => {
-      axios.get('http://127.0.0.1:5000/ItemsList')   
-    .then( res => {
-        // console.log (res.data)
-        setItems(res.data)
-    })
-    .catch((error) => {
-        console.log(error);
-    })
-   
-  }, []);
+
 
   const styles = StyleSheet.create({
     container: {
@@ -79,6 +68,7 @@ useEffect(  () => {
             <Text> quantity: {v.quantity}</Text>
             <Text> weight: {v.weight}</Text>
             <Text> description: {v.description}</Text>
+            <Text> location: {v.location}</Text>
            
            
             <Button

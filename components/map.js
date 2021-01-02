@@ -1,6 +1,4 @@
-
-
-import React from 'react';
+import React, { Component } from "react";
 import { withGoogleMap, GoogleMap, withScriptjs, InfoWindow, Marker } from "react-google-maps";
 import Geocode from "react-geocode";
 import Autocomplete from 'react-google-autocomplete';
@@ -8,12 +6,16 @@ import {  Descriptions } from 'antd';
 import GoogleMapReact from 'google-map-react';
 import { Button, Text,  View,} from 'react-native';
 import axios from "axios";
+import  AsyncStorage  from '@react-native-community/async-storage';
 // import Button from 'react-bootstrap/Button';
 const { MarkerWithLabel } = require("react-google-maps/lib/components/addons/MarkerWithLabel");
 Geocode.setApiKey("AIzaSyDhdSw1QzkXBrYnLSt3EF3izfHEhUj6LMc");
 Geocode.enableDebug();
-class LocationSearchModal extends React.Component {
-    state = {
+class LocationSearchModal extends Component {
+    constructor(props) {
+        super(props);
+
+this.state = {
         address: '',
         city: '',
         area: '',
@@ -29,7 +31,8 @@ class LocationSearchModal extends React.Component {
             lat: 0,
             lng: 0,
         }
-    }
+    } }
+ 
     componentDidMount() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(position => {
@@ -71,19 +74,7 @@ class LocationSearchModal extends React.Component {
             console.error("Geolocation is not supported by this browser!");
         }
     };
-    // shouldComponentUpdate(nextProps, nextState, nextContext) {
-    //     if (
-    //         this.state.markerPosition.lat !== this.state.center.lat ||
-    //         this.state.address !== nextState.address ||
-    //         this.state.city !== nextState.city ||
-    //         this.state.area !== nextState.area ||
-    //         this.state.state !== nextState.state
-    //     ) {//
-    //         return true
-    //     } else if (this.state.mapPosition.lat === nextState.mapPosition.lat) {
-    //         return false
-    //     }
-    // }
+  
     getCity = (addressArray) => {
         let city = '';
         for (let i = 0; i < addressArray.length; i++) {
@@ -120,7 +111,9 @@ class LocationSearchModal extends React.Component {
     onChange = (event) => {
         this.setState({ [event.target.name]: event.target.value });
         // console.log(event.target.value)
+       
     };
+  
     onInfoWindowClose = (event) => { };
     onMarkerDragEnd = (event) => {
         let newLat = event.latLng.lat(),
@@ -180,15 +173,25 @@ class LocationSearchModal extends React.Component {
             },
         })
     };
-    handleSubmit(){
+    async handleSubmit () { 
+        console.log('sfsd')
       var location = this.state.link;
-      localStorage.setItem('location',location)
-    //   console.log(location)
-    //   var user_id= localStorage.getItem('user_id')
-    //   axios.post("http://localhost:5000/insertmap", {'location': location,"user_id":user_id})
-    //     .then((res) => console.log(res))
-    //     .catch((err) => console.log(err))
-        window.location ='/additems'
+      console.log(location)
+     
+      try {
+        //to save token of logged in user in the storage
+     await AsyncStorage.setItem('location',location) 
+    
+     console.log('saved', location)
+     }
+    catch (e){
+    console.log(e)
+    }
+        //to get token of logged in user in the storage
+    const trial = await AsyncStorage.getItem('location')
+    console.log(trial)
+   await this.props.navigation.navigate("addItems")
+       
     }
     render() {
         const AsyncMap = withScriptjs(
@@ -249,7 +252,7 @@ class LocationSearchModal extends React.Component {
                     <Descriptions.Item label="State">{this.state.state}</Descriptions.Item>
                     <Descriptions.Item label="Address">{this.state.address}</Descriptions.Item>
                 </Descriptions>
-                <Button  type="submit"  onClick={this.handleSubmit.bind(this)}   title="Save location" />
+                <Button  type="submit"  onPress={this.handleSubmit.bind(this)}   title="Save location" />
                 <AsyncMap
                     googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDhdSw1QzkXBrYnLSt3EF3izfHEhUj6LMc&libraries=places"
                     loadingElement={

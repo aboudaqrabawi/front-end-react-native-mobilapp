@@ -59,14 +59,14 @@ const onChooseImagePress = async () => {
        }
 
 
-const addItems = () =>{
+const addItems = async () =>{
     axios.post("http://127.0.0.1:5000/items",orderData).then( res => {
        
     })
     .catch((error) => {
         console.log(error);
     })
-    props.navigation.navigate('items')
+    await props.navigation.navigate('items')
 }
 
 
@@ -114,7 +114,10 @@ const addItems = () =>{
             onChangeText={text => setOrderData({...orderData ,price:text})}
             defaultValue={orderData.price}
              />
-             
+              <Button
+        title="add location"
+        onPress={() => props.navigation.navigate("MapScreen")}
+      />
             <Button
         title="add items"
         onPress={addItems}
